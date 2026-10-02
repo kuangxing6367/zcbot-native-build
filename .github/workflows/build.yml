@@ -39,6 +39,8 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
         env:
           PYO3_CROSS: 1
+          PYO3_CROSS_PYTHON_VERSION: '3.11'
+          PYO3_CROSS_LIB_DIR: ${{ env.pythonLocation }}/libs
       - name: Collect
         shell: pwsh
         run: |
