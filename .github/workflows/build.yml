@@ -25,12 +25,11 @@ jobs:
           targets: ${{ matrix.target }}
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
-      - name: Build win32 (cross from 64-bit Python)
-        if: matrix.platform == 'win32'
-        run: cargo build --release --target ${{ matrix.target }}
         env:
-          # abi3 extension-module 不需要链接 libpython；64 位 Python 上编 32 位目标时绕过架构检查
-          PYO3_CROSS: 1
+          # abi3 extension-module 不需要链接 libpython。
+          # win32 目标须显式开 PYO3_CROSS（64 位 Python 编 32 位扩展）；
+          # 其余平台显式置 0，避免空值/未定义行为差异
+          PYO3_CROSS: ${{ matrix.platform == 'win32' && '1' || '0' }}
       - name: Collect
         shell: pwsh
         run: |
