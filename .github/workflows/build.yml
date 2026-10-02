@@ -25,6 +25,9 @@ jobs:
           targets: ${{ matrix.target }}
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
+        env:
+          # abi3 extension-module 不需要链接 libpython；64 位 Python 上编 32 位目标时绕过架构检查
+          PYO3_CROSS: ${{ matrix.platform == 'win32' && '1' || '' }}
       - name: Collect
         shell: pwsh
         run: |
@@ -60,7 +63,8 @@ jobs:
       - name: Collect
         run: |
           mkdir -p "out/${{ matrix.platform }}"
-          cp "target/${{ matrix.target }}/release/zcbot_render.so" "out/${{ matrix.platform }}/zcbot_render.so"
+          # Linux cdylib 产物带 lib 前缀
+          cp "target/${{ matrix.target }}/release/libzcbot_render.so" "out/${{ matrix.platform }}/zcbot_render.so"
       - uses: actions/upload-artifact@v4
         with:
           name: zcbot_render-${{ matrix.platform }}
