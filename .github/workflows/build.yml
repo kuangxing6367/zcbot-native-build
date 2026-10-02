@@ -23,6 +23,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+      # win32 目标需要 32 位 Python 提供 python3.lib（cross 模式也要链接导入库）
+      - uses: actions/setup-python@v5
+        if: matrix.platform == 'win32'
+        with:
+          python-version: '3.11'
+          architecture: x86
       # abi3 extension-module 不需要链接 libpython。
       # PYO3_CROSS 仅认"是否设置"，不能用 0 值关闭，故拆成两个互斥步骤
       - name: Build
