@@ -176,6 +176,10 @@ impl Canvas {
     ) -> PyResult<PyRefMut<'py, Self>> {
         let canvas = &mut *slf;
         let (w, h) = (canvas.width as i32, canvas.height as i32);
+        // 归一化坐标：允许 x1<x0 / y1<y0（倒置坐标），视为同一矩形，
+        // 与 PIL 回退行为一致（rect(300,200,0,0) == rect(0,0,300,200)）。
+        let (x0, x1) = (x0.min(x1), x0.max(x1));
+        let (y0, y1) = (y0.min(y1), y0.max(y1));
         let x0 = x0.max(0);
         let y0 = y0.max(0);
         let x1 = x1.min(w);
