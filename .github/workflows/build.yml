@@ -92,13 +92,15 @@ jobs:
         with:
           merge-multiple: true
           path: out
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: out/**/*.pyd
-          # so/pyd 一并上传
-      - run: |
+      - name: Package combined archive
+        run: |
           cd out
           zip -r ../zcbot_render-native-libs.zip .
-      - uses: softprops/action-gh-release@v2
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          files: zcbot_render-native-libs.zip
+          # 单趟上传：合并 zip + 各平台单文件（so/pyd 一并发布）
+          files: |
+            zcbot_render-native-libs.zip
+            out/**/*.so
+            out/**/*.pyd
